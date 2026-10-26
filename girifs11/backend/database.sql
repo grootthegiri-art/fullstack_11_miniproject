@@ -1,0 +1,28 @@
+CREATE DATABASE IF NOT EXISTS uarq_opd;
+USE uarq_opd;
+
+CREATE TABLE IF NOT EXISTS patients (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    phone VARCHAR(20)
+);
+
+CREATE TABLE IF NOT EXISTS queue_tokens (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    patient_id BIGINT NOT NULL,
+    department VARCHAR(80) NOT NULL,
+    status VARCHAR(30) NOT NULL DEFAULT 'WAITING',
+    best_minutes INT NOT NULL DEFAULT 5,
+    likely_minutes INT NOT NULL DEFAULT 10,
+    worst_minutes INT NOT NULL DEFAULT 20,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (patient_id) REFERENCES patients(id)
+);
+
+CREATE TABLE IF NOT EXISTS consultations (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    token_id BIGINT NOT NULL UNIQUE,
+    doctor_name VARCHAR(100) NOT NULL,
+    completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (token_id) REFERENCES queue_tokens(id)
+);
